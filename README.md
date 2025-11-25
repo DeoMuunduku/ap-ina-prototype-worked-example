@@ -23,8 +23,10 @@ From these cards, we:
 5. Calibrate a **gating threshold (τ)** to target a given abstention rate (e.g., 20%), then run the gate to produce:
    - `eligibility_audit.csv`
    - per-incident **trace logs** (`traces/`)
+     <img width="2250" height="1048" alt="image" src="https://github.com/user-attachments/assets/19fd624c-465c-4e9b-a96b-ebd5c319919c" />
+
    - per-incident **provenance logs** (`prov/`)
-   - figures (decision distribution, p_top histograms, latency proxy)
+  
 6. Evaluate gate behaviour against **GOLD labels** (coverage and abstention metrics).
 
 ---
