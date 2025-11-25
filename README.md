@@ -189,4 +189,8 @@ A typical provenance record from prov/:
     "approved": true
   }
 }
+5. Contact
 
+For questions about the code or artefacts, please contact:
+
+Déo Munduku – deo.munduku@lamsade.dauphine.fr
