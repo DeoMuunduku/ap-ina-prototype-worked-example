@@ -39,6 +39,7 @@ These scripts implement the steps described in the paper:
   feature allowlist (anti-leakage).
 
 
+
 - `step2_generate_silver_labels_py.ipynb`  
   Generate **silver labels** (rule-based) used to operationalise the candidate meanings **H**
   described in the worked example.
@@ -53,6 +54,10 @@ These scripts implement the steps described in the paper:
 - `step5_eval_gate_vs_gold.py`  
   Evaluate the gate against GOLD labels (coverage and abstention metrics) and export summary
   reports.
+  
+  Example trace and provenance (for reviewers)
+  
+<img width="2846" height="1640" alt="image" src="https://github.com/user-attachments/assets/57845caf-f3f9-4b54-889f-35b9caf51193" />
 
 ---
 
@@ -140,9 +145,11 @@ python step4_calibrate_tau_and_run_protocol_py.py
 python step5_eval_gate_vs_gold.py
 
 
-4. Example trace and provenance (for reviewers)
 
-<img width="2860" height="1650" alt="image" src="https://github.com/user-attachments/assets/f86ee560-d21a-4e7e-b9d0-cdd30f6793be" />
+4. Example trace and provenance (for reviewers)
+<img width="2846" height="1640" alt="image" src="https://github.com/user-attachments/assets/e24ab128-45f1-4be4-b37a-9263bd559429" />
+
+
 {
   "episode_id": "BUGS-10954",
   "ts": "1999-07-30T22:55:51Z",
