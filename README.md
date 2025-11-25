@@ -25,6 +25,7 @@ These scripts implement the steps described in the paper:
 - `step1_prepare_cards_clean_py.py`  
   Prepare cleaned incident cards from the raw BugAda input, perform basic QC, and build the
   feature allowlist (anti-leakage).
+<img width="2008" height="1014" alt="image" src="https://github.com/user-attachments/assets/2aae5409-c456-4a47-895e-7de178e6dd5e" />
 
 - `step2_generate_silver_labels_py.ipynb`  
   Generate **silver labels** (rule-based) used to operationalise the candidate meanings **H**
