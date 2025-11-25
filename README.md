@@ -1,4 +1,4 @@
-# AP-InA Worked Example – BugAda (Bugzilla / Jira Incidents)
+# AP-InA Worked Example – BugAda 
 
 This repository contains the companion material for the worked example of **AP-InA** presented in:
 
