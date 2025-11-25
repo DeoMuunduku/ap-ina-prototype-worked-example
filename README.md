@@ -20,7 +20,7 @@ From these cards, we:
 
 3. Generate **silver labels** (deterministic rules) to operationalize the candidate meanings **H**.
 4. Create **DEV / HOLDOUT-H** splits.
-5. Calibrate a **gating threshold (τ)** to target a given abstention rate (e.g., 20%), then run the gate to produce:
+5. Calibrate a **gating threshold (τ)** to target a given abstention rate (e.g., 80%), then run the gate to produce:
    <img width="567" height="455" alt="fig_abstention_vs_tau" src="https://github.com/user-attachments/assets/71ddd30e-9448-41ba-93ba-e510af7c3dcf" />
 
    - `eligibility_audit.csv`
