@@ -141,6 +141,8 @@ python step5_eval_gate_vs_gold.py
 
 
 4. Example trace and provenance (for reviewers)
+
+<img width="2860" height="1650" alt="image" src="https://github.com/user-attachments/assets/f86ee560-d21a-4e7e-b9d0-cdd30f6793be" />
 {
   "episode_id": "BUGS-10954",
   "ts": "1999-07-30T22:55:51Z",
@@ -162,6 +164,8 @@ python step5_eval_gate_vs_gold.py
     "c": { "release_regression": 0.0, "infra_instability": 0.0, "...": 0.0 }
   }
 }
+
+<img width="2860" height="1650" alt="image" src="https://github.com/user-attachments/assets/f86ee560-d21a-4e7e-b9d0-cdd30f6793be" />
 
 A typical provenance record from prov/:
 {
