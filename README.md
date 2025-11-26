@@ -1,22 +1,53 @@
-# AP-InA Worked Example
+# AP-InA Worked Example (Red-Light Dashboard)
+
 This repository contains the companion material for the worked example of **AP-InA** presented in:
 
 > **Towards Traceable Meaning in Information Systems**  
-> D. Munduku, E. Negre – accepted at **ICIM 2026**, University of Oxford (March 27–29, 2026).  
+> D. Munduku, E. Negre – accepted at **ICIM 2026**, University of Oxford (27–29 March 2026).  
 > To appear in Springer CCIS.
 
-We instantiate the AP-InA minimal audit contract (**R–A–U–H–T–P–O–I/N**) on a BugAda-style dataset where each
-Bugzilla/Jira issue is treated as an **incident card** on a “red-light” dashboard.
-
----
+We instantiate the AP-InA minimal audit contract (**R–A–U–H–T–P–O–I/N**) on a **synthetic dataset** where each record is treated as an **incident card** on an industrial “red-light” dashboard.
 
 ## 1. Repository contents (top level)
 
-- `.gitignore` – standard Git ignore rules.
-- `LICENSE` – license for this repository.
-- `README.md` – this file.
-- `ap_ina_bugada_prototype.ipynb` – original notebook used to prototype the full pipeline.
-## 6. Literature Review – PRISMA Flow
+- `.gitignore` – standard Git ignore rules  
+- `LICENSE` – licence for this repository  
+- `README.md` – this file  
+- `ap_ina_prototype.ipynb` – notebook used to prototype the full pipeline  
+
+## 2. Worked example overview
+
+The worked example shows how AP-InA can be integrated into an information system as an **audit/logging layer** placed between:
+1) the dashboard (incident cards) and  
+2) the decision mechanism (the “gate” / scoring + threshold policy).
+
+For each “episode” (input → candidates → scores → decision), the layer produces exportable audit artefacts that make the decision **traceable and replayable from logs alone**.
+
+## 3. Pipeline scripts (AP-InA)
+
+These scripts implement the steps described in the paper:
+
+- `step1_prepare_cards_clean.py`  
+  Prepare cleaned incident cards from raw inputs, perform basic QC, and build a feature allowlist (anti-leakage setting).
+
+- `step2_generate_silver_labels.ipynb`  
+  Generate **silver labels** (rule-based) used to operationalise the candidate meanings **H** described in the worked example.
+
+- `step3_make_splits_dev_holdout.py`  
+  Deterministic split into **DEV** and **HOLDOUT-H** folds.
+
+- `step4_calibrate_tau_and_run_protocol.py`  
+  Sweep over thresholds τ, choose a target abstention rate, run the AP-InA protocol, and generate traces, provenance logs, and audit files.
+
+- `step5_eval_gate_vs_gold.py`  
+  Evaluate the gate against reference labels (coverage and abstention metrics) and export summary reports.
+
+## 4. Audit artefacts (what the prototype generates)
+
+A typical full run produces the following artefacts that instantiate **R–A–U–H–T–P–O–I/N**:
+  <img width="1423" height="820" alt="Capture d’écran 2025-11-25 à 17 55 21" src="https://github.com/user-attachments/assets/4ab31867-70c3-4a67-b222-e46bdd15677a" />
+
+## 5. Literature Review – PRISMA Flow
 
 As announced in the paper, we provide here the PRISMA diagram of the systematic
 literature review (1990–2025).
@@ -31,28 +62,64 @@ and raw exports) will be added progressively in a dedicated subfolder of the rep
 <img width="1567" height="841" alt="prisma" src="https://github.com/user-attachments/assets/899c3d80-caff-4416-b18d-e4c52fdc0740" />
 ### 1.1. Scripts (AP-InA pipeline)
 
-These scripts implement the steps described in the paper:
+- `eligibility_audit.csv`  
+  Aggregated table used to report eligibility checks, abstention rates, and gate behaviour.
 
-- `step1_prepare_cards_clean_py.py`  
-  Prepare cleaned incident cards from the raw BugAda input, perform basic QC, and build the
-  feature allowlist (anti-leakage).
+- `traces/`  
+  One JSON file per episode, containing:
+  - episode identifier and timestamp,
+  - input features (early fields only),
+  - candidate set **H** and scores,
+  - decision and applied rule,
+  - policy/resource version references,  
+  enabling decision **replay from logs alone**.
 
+- `prov/`  
+  Provenance logs recording (at minimum):
+  - resource updates (from-version → to-version),
+  - responsible unit / approver,
+  - timestamps and policy versions.
 
+- `resources/` (or equivalent)  
+  Versioned resources used by the interpretive schema, such as:
+  - feature allowlist,
+  - keyword table,
+  - gate policy files (e.g., `gate_policy_v1.0.json`, `gate_policy_v1.1.json`).
 
-- `step2_generate_silver_labels_py.ipynb`  
-  Generate **silver labels** (rule-based) used to operationalise the candidate meanings **H**
-  described in the worked example.
+- Additional summaries (optional)  
+  e.g., `metrics.json`, `gate_outputs.csv`, figures used in the Discussion section.
 
-- `step3_make_splits_dev_holdouth_py.py`  
-  Deterministic split into **DEV** and **HOLDOUT-H** folds.
+## 5. Example trace and provenance (for reviewers)
 
-- `step4_calibrate_tau_and_run_protocol_py.py`  
-  Sweep over thresholds τ, choose a target abstention rate, run the AP-InA protocol, and
-  generate traces, provenance logs and audit files.
+Example trace (single episode):
 
-- `step5_eval_gate_vs_gold.py`  
-  Evaluate the gate against GOLD labels (coverage and abstention metrics) and export summary
-  reports.
+```json
+{
+  "episode_id": "INC-00010954",
+  "ts": "2025-03-20T14:33:11Z",
+  "input": {
+    "title": "Red alert on component Settings UI",
+    "component": "Settings UI",
+    "severity": "medium",
+    "desc_len": 46,
+    "has_keyword_crash": false,
+    "security_flag": false
+  },
+  "context": {
+    "team": "ops-L1",
+    "policy": "policy@tau=0.45",
+    "policy_decl": "target_abst=0.20; tau=0.45; delta=0.15"
+  },
+  "scores": {
+    "release_regression": 0.00,
+    "infra_instability": 0.00,
+    "security_threat": 0.00,
+    "insufficient_info": 0.12,
+    "false_positive": 0.08,
+    "abstain": 1.00
+  },
+  "decision": "abstain"
+}
   
   Example trace and provenance (for reviewers)
   
@@ -204,3 +271,110 @@ A typical provenance record from prov/:
 For questions about the code or artefacts, please contact:
 
 Déo Munduku – deo.munduku@lamsade.dauphine.fr
+
+# AP-InA Worked Example (Red-Light Dashboard)
+
+This repository contains the companion material for the worked example of **AP-InA** presented in:
+
+> **Towards Traceable Meaning in Information Systems**  
+> D. Munduku, E. Negre – accepted at **ICIM 2026**, University of Oxford (27–29 March 2026).  
+> To appear in Springer CCIS.
+
+We instantiate the AP-InA minimal audit contract (**R–A–U–H–T–P–O–I/N**) on a **synthetic dataset** where each record is treated as an **incident card** on an industrial “red-light” dashboard.
+
+## 1. Repository contents (top level)
+
+- `.gitignore` – standard Git ignore rules  
+- `LICENSE` – licence for this repository  
+- `README.md` – this file  
+- `ap_ina_prototype.ipynb` – notebook used to prototype the full pipeline  
+
+## 2. Worked example overview
+
+The worked example shows how AP-InA can be integrated into an information system as an **audit/logging layer** placed between:
+1) the dashboard (incident cards) and  
+2) the decision mechanism (the “gate” / scoring + threshold policy).
+
+For each “episode” (input → candidates → scores → decision), the layer produces exportable audit artefacts that make the decision **traceable and replayable from logs alone**.
+
+## 3. Pipeline scripts (AP-InA)
+
+These scripts implement the steps described in the paper:
+
+- `step1_prepare_cards_clean.py`  
+  Prepare cleaned incident cards from raw inputs, perform basic QC, and build a feature allowlist (anti-leakage setting).
+
+- `step2_generate_silver_labels.ipynb`  
+  Generate **silver labels** (rule-based) used to operationalise the candidate meanings **H** described in the worked example.
+
+- `step3_make_splits_dev_holdout.py`  
+  Deterministic split into **DEV** and **HOLDOUT-H** folds.
+
+- `step4_calibrate_tau_and_run_protocol.py`  
+  Sweep over thresholds τ, choose a target abstention rate, run the AP-InA protocol, and generate traces, provenance logs, and audit files.
+
+- `step5_eval_gate_vs_gold.py`  
+  Evaluate the gate against reference labels (coverage and abstention metrics) and export summary reports.
+
+## 4. Audit artefacts (what the prototype generates)
+
+A typical full run produces the following artefacts that instantiate **R–A–U–H–T–P–O–I/N**:
+
+- `eligibility_audit.csv`  
+  Aggregated table used to report eligibility checks, abstention rates, and gate behaviour.
+
+- `traces/`  
+  One JSON file per episode, containing:
+  - episode identifier and timestamp,
+  - input features (early fields only),
+  - candidate set **H** and scores,
+  - decision and applied rule,
+  - policy/resource version references,  
+  enabling decision **replay from logs alone**.
+
+- `prov/`  
+  Provenance logs recording (at minimum):
+  - resource updates (from-version → to-version),
+  - responsible unit / approver,
+  - timestamps and policy versions.
+
+- `resources/` (or equivalent)  
+  Versioned resources used by the interpretive schema, such as:
+  - feature allowlist,
+  - keyword table,
+  - gate policy files (e.g., `gate_policy_v1.0.json`, `gate_policy_v1.1.json`).
+
+- Additional summaries (optional)  
+  e.g., `metrics.json`, `gate_outputs.csv`, figures used in the Discussion section.
+
+## 5. Example trace and provenance (for reviewers)
+
+Example trace (single episode):
+
+```json
+{
+  "episode_id": "INC-00010954",
+  "ts": "2025-03-20T14:33:11Z",
+  "input": {
+    "title": "Red alert on component Settings UI",
+    "component": "Settings UI",
+    "severity": "medium",
+    "desc_len": 46,
+    "has_keyword_crash": false,
+    "security_flag": false
+  },
+  "context": {
+    "team": "ops-L1",
+    "policy": "policy@tau=0.45",
+    "policy_decl": "target_abst=0.20; tau=0.45; delta=0.15"
+  },
+  "scores": {
+    "release_regression": 0.00,
+    "infra_instability": 0.00,
+    "security_threat": 0.00,
+    "insufficient_info": 0.12,
+    "false_positive": 0.08,
+    "abstain": 1.00
+  },
+  "decision": "abstain"
+}
